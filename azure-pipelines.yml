@@ -55,7 +55,7 @@ stages:
                         -Dsonar.projectKey=$(sonarProjectKey) \
                         -Dsonar.projectName=$(sonarProjectName) \
                         -Dsonar.projectVersion='1.0' \
-                        -Dsonar.sources=. \
-                        -Dsonar.java.binaries=target/classes # Adjust as per your build structure
+                        -Dsonar.sources=. 
+                       # -Dsonar.java.binaries=target/classes # Adjust as per your build structure
                 done
             displayName: 'Create SonarQube Projects and Run Scans'
