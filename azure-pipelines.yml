@@ -1,0 +1,41 @@
+trigger:
+  branches:
+    include:
+      - azure-pipelines
+
+pr:
+  branches:
+    include:
+      - azure-pipelines
+
+pool:
+  name: 'Chandan'  # Managed node pool name
+
+variables:
+  services: "adservice cartservice checkoutservice currencyservice emailservice frontend loadgenerator paymentservice productcatalogservice recommendationservice shippingservice shoppingassistantservice"
+  sonarHost: "http://54.82.85.241:9000/"
+  sonarToken: "squ_80c52fbbe68721fce9eb901fc1ae78fe23d78dcf"  # Replace with your SonarQube token
+
+stages:
+  - stage: SonarQubeSetup
+    displayName: 'SonarQube Project Setup'
+    jobs:
+      - job: CreateProjects
+        displayName: 'Create SonarQube Projects'
+        steps:
+          - task: SonarQubePrepare@7
+            inputs:
+              SonarQube: 'sonar'
+              scannerMode: 'cli'
+              configMode: 'manual'
+              cliProjectKey: 'adservice'
+              cliProjectName: 'Ad Service'
+              cliSources: 'src/adservice/src'
+              extraProperties: |
+                # Additional properties that will be passed to the scanner,
+                # Put one key=value per line, example:
+                # sonar.exclusions=**/*.bin
+                sonar.java.binaries=src/adservice/src/.  # Update this path if necessary
+          - task: SonarQubeAnalyze@7
+            inputs:
+              jdkversion: 'JAVA_HOME_17_X64'
