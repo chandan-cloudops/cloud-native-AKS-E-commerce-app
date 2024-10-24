@@ -24,26 +24,13 @@ stages:
         displayName: 'Create SonarQube Projects'
         steps:
           - script: |
-              for service in $(services); do
-                echo "Setting up SonarQube for $service..."
-
-                # Prepare analysis configuration
-                echo "Preparing SonarQube analysis for ${service}..."
-                - task: SonarQubePrepare@6
-                  inputs:
-                    SonarQube: 'sonar'  # Replace with your SonarQube service connection name
-                    scannerMode: 'CLI'
-                    configMode: 'manual'
-                    cliProjectKey: '${service}'  # Directly use the service variable
-                    cliProjectName: '${service}'  # Directly use the service variable
-                    cliSources: 'src/${service}'  # Update this to point to the correct source folder
-                    extraProperties: |
-                      sonar.java.binaries=src/${service}/.  # Adjust path as necessary
-
-                # Run SonarQube analysis
-                echo "Running SonarQube analysis for ${service}..."
-                - task: SonarQubeAnalyze@6
-                  inputs:
-                    jdkversion: 'JAVA_HOME_17_X64'  # Specify the JDK version you are using
-              done
-            displayName: 'Create SonarQube Projects and Run Scans'
+             - task: SonarQubePrepare@7
+               inputs:
+                 scannerMode: 'cli'
+                 configMode: 'file'
+                 configFile: 'src/adservice/sonar-project.properties'
+                 extraProperties: |
+                   # Additional properties that will be passed to the scanner, 
+                   # Put one key=value per line, example:
+                   # sonar.exclusions=**/*.bin
+                   sonar.java.binaries=.
