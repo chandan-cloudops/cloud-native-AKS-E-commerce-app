@@ -27,10 +27,12 @@ stages:
              - task: SonarQubePrepare@7
                inputs:
                  scannerMode: 'cli'
-                 configMode: 'file'
-                 configFile: 'src/adservice/sonar-project.properties'
+                 configMode: 'manual'
+                 cliProjectKey: 'adservice'
+                 cliProjectName: 'adservice'
+                 cliSources: 'src/adservice/.'
                  extraProperties: |
                    # Additional properties that will be passed to the scanner, 
                    # Put one key=value per line, example:
                    # sonar.exclusions=**/*.bin
-                   sonar.java.binaries=/src/adservice/.
+                   onar.java.binaries=.
