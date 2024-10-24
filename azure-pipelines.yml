@@ -35,7 +35,7 @@ stages:
                 # Additional properties that will be passed to the scanner,
                 # Put one key=value per line, example:
                 # sonar.exclusions=**/*.bin
-                sonar.java.binaries=.  # Update this path if necessary
+                sonar.java.binaries=src/adservice/src/.  # Update this path if necessary
           - task: SonarQubeAnalyze@7
             inputs:
               jdkversion: 'JAVA_HOME_17_X64'
