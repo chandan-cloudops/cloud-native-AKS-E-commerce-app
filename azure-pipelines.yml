@@ -12,7 +12,7 @@ pool:
   name: 'Chandan'  # Managed node pool name
 
 variables:
-  services: "adservice cartservice checkoutservice currencyservice emailservice frontend loadgenerator paymentservice productcatalogservice recommendationservice shippingassistantservice"
+  services: "adservice cartservice checkoutservice currencyservice emailservice frontend loadgenerator paymentservice productcatalogservice recommendationservice shippingservice shoppingassistantservice"
   sonarHost: "http://54.82.85.241:9000/"
   sonarToken: "squ_80c52fbbe68721fce9eb901fc1ae78fe23d78dcf"  # Replace with your SonarQube token
 
@@ -22,40 +22,32 @@ stages:
     jobs:
       - job: CreateProjects
         displayName: 'Create SonarQube Projects'
+        strategy:
+          matrix:
+            adservice: {}
+            cartservice: {}
+            checkoutservice: {}
+            currencyservice: {}
+            emailservice: {}
+            frontend: {}
+            loadgenerator: {}
+            paymentservice: {}
+            productcatalogservice: {}
+            recommendationservice: {}
+            shippingservice: {}
+            shoppingassistantservice: {}
         steps:
-          - script: |
-              # Loop through each service
-              for service in $(services); do
-                echo "Setting up SonarQube for $service..."
-                
-                # Prepare SonarQube analysis
-                echo "Preparing SonarQube analysis for $service..."
-                echo "##vso[task.setvariable variable=sonarProjectKey;isOutput=true]${service}" # Define project key
-                echo "##vso[task.setvariable variable=sonarProjectName;isOutput=true]${service^}" # Capitalize project name
-              
-                # Prepare analysis configuration
-                - task: SonarQubePrepare@7
-                  inputs:
-                    SonarQube: 'sonar'  # Replace with your SonarQube service connection name
-                    scannerMode: 'cli'
-                    configMode: 'file'
-                    projectKey: "$(sonarProjectKey)"
-                    projectName: "$(sonarProjectName)"
-                    projectVersion: '1.0'  # You can adjust this as needed
-                    extraProperties: |
-                      sonar.sources=.
-                      sonar.java.binaries=target/classes # Specify the path to your compiled Java classes
+          - task: SonarQubePrepare@6
+            inputs:
+              SonarQube: 'sonar'  # Replace with your SonarQube service connection name
+              scannerMode: 'CLI'
+              configMode: 'manual'
+              cliProjectKey: '$(service)'  # Use the service name from the matrix
+              cliProjectName: '$(service)'
+              cliSources: '.'
+              extraProperties: |
+                sonar.java.binaries=.  # Adjust as necessary for your project structure
 
-                # Run SonarQube analysis
-                - task: CmdLine@2
-                  displayName: 'Run SonarQube Analysis'
-                  inputs:
-                    script: |
-                      sonar-scanner \
-                        -Dsonar.projectKey=$(sonarProjectKey) \
-                        -Dsonar.projectName=$(sonarProjectName) \
-                        -Dsonar.projectVersion='1.0' \
-                        -Dsonar.sources=. 
-                       # -Dsonar.java.binaries=target/classes # Adjust as per your build structure
-                done
-            displayName: 'Create SonarQube Projects and Run Scans'
+          - task: SonarQubeAnalyze@6
+            inputs:
+              jdkversion: 'JAVA_HOME_17_X64'  # Specify the JDK version you are using
