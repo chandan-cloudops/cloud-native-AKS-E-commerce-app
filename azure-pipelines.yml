@@ -23,16 +23,16 @@ stages:
       - job: CreateProjects
         displayName: 'Create SonarQube Projects'
         steps:
-          - script: |
-             - task: SonarQubePrepare@7
-               inputs:
-                 scannerMode: 'cli'
-                 configMode: 'manual'
-                 cliProjectKey: 'adservice'
-                 cliProjectName: 'adservice'
-                 cliSources: 'src/adservice/.'
-                 extraProperties: |
-                   # Additional properties that will be passed to the scanner, 
-                   # Put one key=value per line, example:
-                   # sonar.exclusions=**/*.bin
-                   onar.java.binaries=.
+          - task: SonarQubePrepare@7
+            inputs:
+              SonarQube: 'sonar'
+              scannerMode: 'cli'
+              configMode: 'manual'
+              cliProjectKey: 'adservice'
+              cliProjectName: 'Ad Service'
+              cliSources: 'src/adservice/.'
+              extraProperties: |
+                # Additional properties that will be passed to the scanner,
+                # Put one key=value per line, example:
+                # sonar.exclusions=**/*.bin
+                sonar.java.binaries=build/classes/java/main  # Update this path if necessary
