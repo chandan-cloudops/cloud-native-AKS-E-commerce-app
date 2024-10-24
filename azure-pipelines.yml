@@ -22,32 +22,28 @@ stages:
     jobs:
       - job: CreateProjects
         displayName: 'Create SonarQube Projects'
-        strategy:
-          matrix:
-            adservice: {}
-            cartservice: {}
-            checkoutservice: {}
-            currencyservice: {}
-            emailservice: {}
-            frontend: {}
-            loadgenerator: {}
-            paymentservice: {}
-            productcatalogservice: {}
-            recommendationservice: {}
-            shippingservice: {}
-            shoppingassistantservice: {}
         steps:
-          - task: SonarQubePrepare@6
-            inputs:
-              SonarQube: 'sonar'  # Replace with your SonarQube service connection name
-              scannerMode: 'CLI'
-              configMode: 'manual'
-              cliProjectKey: '$(service)'  # Use the service name from the matrix
-              cliProjectName: '$(service)'
-              cliSources: '.'
-              extraProperties: |
-                sonar.java.binaries=.  # Adjust as necessary for your project structure
+          - script: |
+              for service in $(services); do
+                echo "Setting up SonarQube for $service..."
 
-          - task: SonarQubeAnalyze@6
-            inputs:
-              jdkversion: 'JAVA_HOME_17_X64'  # Specify the JDK version you are using
+                # Prepare analysis configuration
+                echo "Preparing SonarQube analysis for ${service}..."
+                - task: SonarQubePrepare@6
+                  inputs:
+                    SonarQube: 'sonar'  # Replace with your SonarQube service connection name
+                    scannerMode: 'CLI'
+                    configMode: 'manual'
+                    cliProjectKey: '${service}'  # Directly use the service variable
+                    cliProjectName: '${service}'  # Directly use the service variable
+                    cliSources: 'src/${service}'  # Update this to point to the correct source folder
+                    extraProperties: |
+                      sonar.java.binaries=src/${service}/.  # Adjust path as necessary
+
+                # Run SonarQube analysis
+                echo "Running SonarQube analysis for ${service}..."
+                - task: SonarQubeAnalyze@6
+                  inputs:
+                    jdkversion: 'JAVA_HOME_17_X64'  # Specify the JDK version you are using
+              done
+            displayName: 'Create SonarQube Projects and Run Scans'
