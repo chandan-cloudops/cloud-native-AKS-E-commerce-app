@@ -1,12 +1,12 @@
 trigger:
   branches:
     include:
-      - main
+      - azure-pipelines
 
 pr:
   branches:
     include:
-      - main
+      - azure-pipelines
 
 pool:
   name: 'Chandan'  # Managed node pool name
